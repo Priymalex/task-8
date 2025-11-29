@@ -1,0 +1,17 @@
+.formContainer{
+display: flex;
+  flex-direction:column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FAF0CA;
+  z-index: 1000;
+  border: solid 1px black;
+  order:2;
+  width: 25%;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
