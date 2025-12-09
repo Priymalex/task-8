@@ -1,17 +1,297 @@
-.formContainer{
-display: flex;
-  flex-direction:column;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #FAF0CA;
-  z-index: 1000;
-  border: solid 1px black;
-  order:2;
-  width: 25%;
+* {
+    font-family: Courier New, monospace;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-form{
+body {
+    background-color: black;
+    min-height: 100vh;
+}
+
+h1 {
+    font-size: 25px;
+}
+
+#popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1000;
+}
+
+#popup {
+    position: absolute;
+    width: 90%;
+    max-width: 500px;
+    min-width: 300px;
+    height: auto;
+    min-height: 400px;
+    max-height: 90vh;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+form {
+    width: 100%;
+    height: auto;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+}
+
+.inputForm {
+    width: 100%;
+    height: 2.5rem;
+    border-radius: 20px;
+    padding: 0 15px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.labelForm {
+    width: 100%;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    resize: vertical;
+    font-size: 16px;
+}
+
+#call-popup {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    z-index: 1;
+}
+
+#call-popup:hover {
+    background-color: #cc0000;
+}
+
+#form-btns {
+    display: flex;
+    flex-direction: row;
     justify-content: space-evenly;
+    align-items: center;
+    height: auto;
+    width: 100%;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.form-btn {
+    width: 40%;
+    min-width: 120px;
+    height: 45px;
+    border-radius: 25px;
+    background-color: rgb(47, 47, 255);
+    color: white;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.form-btn:hover {
+    background-color: rgb(30, 30, 200);
+}
+
+/* Медиа-запросы для адаптивности */
+
+/* Планшеты (768px и меньше) */
+@media screen and (max-width: 768px) {
+    #popup {
+        width: 95%;
+        padding: 15px;
+        max-height: 85vh;
+    }
+    
+    .form-btn {
+        width: 45%;
+        min-width: 100px;
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    #call-popup {
+        padding: 12px 25px;
+        font-size: 16px;
+    }
+    
+    .inputForm {
+        height: 2.2rem;
+        font-size: 14px;
+    }
+    
+    textarea {
+        font-size: 14px;
+    }
+}
+
+/* Мобильные устройства (480px и меньше) */
+@media screen and (max-width: 480px) {
+    #popup {
+        width: 98%;
+        padding: 12px;
+        border-radius: 8px;
+    }
+    
+    #form-btns {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .form-btn {
+        width: 100%;
+        min-width: unset;
+        height: 45px;
+        font-size: 16px;
+    }
+    
+    #call-popup {
+        width: 90%;
+        max-width: 250px;
+        padding: 15px 20px;
+        font-size: 16px;
+        text-align: center;
+    }
+    
+    h1 {
+        font-size: 20px;
+        text-align: center;
+    }
+    
+    .inputForm {
+        height: 2.5rem;
+        font-size: 16px;
+    }
+    
+    textarea {
+        min-height: 80px;
+    }
+    
+    form {
+        gap: 12px;
+    }
+}
+
+/* Очень маленькие экраны (320px и меньше) */
+@media screen and (max-width: 320px) {
+    #popup {
+        padding: 10px;
+    }
+    
+    .form-btn {
+        height: 40px;
+        font-size: 14px;
+    }
+    
+    #call-popup {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .inputForm {
+        height: 2.2rem;
+        font-size: 14px;
+    }
+    
+    textarea {
+        font-size: 14px;
+    }
+}
+
+/* Большие экраны (1200px и больше) */
+@media screen and (min-width: 1200px) {
+    #popup {
+        width: 30%;
+        max-width: 600px;
+    }
+    
+    .form-btn {
+        width: 35%;
+    }
+}
+
+/* Высокие экраны */
+@media screen and (max-height: 600px) {
+    #popup {
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+    
+    form {
+        min-height: 250px;
+    }
+    
+    textarea {
+        min-height: 60px;
+    }
+}
+
+/* Пейзажная ориентация на мобильных */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    #popup {
+        max-height: 85vh;
+        padding: 10px;
+    }
+    
+    form {
+        min-height: 200px;
+    }
+    
+    .inputForm {
+        height: 2rem;
+    }
+    
+    #form-btns {
+        margin-top: 10px;
+    }
+}
+
+/* Адаптация для кнопок формы на очень узких экранах */
+@media screen and (max-width: 350px) {
+    #form-btns {
+        flex-direction: column;
+    }
+    
+    .form-btn {
+        width: 100%;
+        margin-bottom: 5px;
+    }
 }
