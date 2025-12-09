@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <title>Задание 8</title>
     <link rel="stylesheet" href = "style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
 </head>
 <body>
     <header>
@@ -13,17 +12,127 @@
     </div>
     <div>
     </div>
-    <button class = "btn btn-primary">Заполнить форму</button>
-    <div class = "container-fluid">
-        <form action="/" method = "POST" id = "form">
-            <input name = "firstName" type = "text" placeholder="Имя:" class = "form-control">
-            <input name = "secondName" type = "text" placeholder="Фамилия:" class = "form-control">
-            <input name = "organisation" type = "text" placeholder="Организация:" class = "form-control">
-            <input name = "mail" type="email" placeholder="Email:" class="form-control" id="exampleFormControlInput1">
-            <label><input name = "radio" type = "radio">Согласие на обработку данных</label>
-            <textarea name = "message" class="form-control" id="exampleFormControlTextarea1"></textarea>
-        </form>
-        <a src = "license.html">Просмотреть согласие на обработку данных</a>
+    <button id = "call-popup" >Заполнить форму</button>
+    <div id = "popup-overlay">
+        <div id="popup">
+            <h1>Форма обратной связи</h1>
+            <form action="/" method = "POST" id = "form">
+                <label class="labelForm">Имя:<br><input name = "firstName" type = "text" placeholder="Имя:" class = "inputForm"></label>
+                <label class="labelForm">Фамилия:<br><input name = "secondName" type = "text" placeholder="Фамилия:" class = "inputForm" id = "secondName"></label>
+                <label class="labelForm">Организация:<br><input name = "organisation" type = "text" placeholder="Организация:" class = "inputForm" id = "organisation"></label>
+                <label class="labelForm">Электронная почта:<br><input name = "mail" type="email" placeholder="Email:" class="inputForm" id = "mail"></label>
+                <label class="labelForm">Ваше сообщение для нас:<textarea name = "message" class="form-control" id="exampleFormControlTextarea1"></textarea></label>
+                <label class="labelForm"><input name = "radio" type = "radio">Согласие на обработку данных</label>
+            </form>
+            <div id = "form-btns">
+            <button class = "form-btn" id = "close-popup">Отмена</button>
+            <button class = "form-btn" id = "end">Отправить</button>
+            </div>
+            <a src = "license.html">Просмотреть согласие на обработку данных</a>
+        </div>
     </div>
+    <script>
+const popupOverlay = document.querySelector("#popup-overlay"); 
+const pop = document.querySelector("#popup");
+const btn = document.querySelector("#call-popup");
+const closeBtn = document.querySelector("#close-popup");
+// Получаем первый элемент из коллекции
+const fnValid = document.getElementsByName('firstName')[0];
+const mailValid = document.getElementById("mail");
+const surname = document.getElementById("secondName");
+const org =  document.getElementById("organisation")
+const nameRegex = /^[A-Za-z]+$/;
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function checkInitialState() {
+    if (window.location.hash === '#form') {
+        showPopup();
+    }
+}
+
+function showPopup(){ 
+    popupOverlay.style.display = "block";
+    history.pushState({ formOpen: true }, "", "#form");
+}
+
+function hidePopup() { 
+    popupOverlay.style.display = "none"; 
+    if (window.location.hash === '#form') {
+        history.back();
+    } 
+};
+
+function checkValidName() {
+    if(!nameRegex.test(fnValid.value)) {
+        alert("Ошибка!");
+    }
+    else if(fnValid.value.trim() === ""){
+        alert("Ошибка!");
+    }
+     else {
+        alert("Круто");
+    }
+}
+
+function checkValidSecondName() {
+    if(!nameRegex.test(surname.value)) {
+        alert("Ошибка!");
+    }
+    else if(surname.value.trim() === ""){
+        alert("Ошибка!");
+    }
+     else {
+        alert("Круто");
+    }
+}
+
+function checkValidOrg(){
+    if(org.value.trim() === ""){
+        alert("Ошибка!");
+    }
+    else {
+        alert("Круто");
+    }
+}
+
+function checkValidEmail(){
+    if(!emailRegex.test(mail.value)) {
+        alert("Ошибка!");
+    }
+    else if(mail.value.trim() === ""){
+        alert("Ошибка!");
+    }
+    else {
+        alert("Круто");
+    }
+}
+
+window.addEventListener("DOMContentLoaded", function(event) {
+    console.log("DOMContentLoaded");
+    
+    // Проверяем начальное состояние
+    checkInitialState();
+    
+    btn.addEventListener("click", showPopup);
+    closeBtn.addEventListener("click", hidePopup);
+    
+    // Правильное добавление обработчика события
+    fnValid.addEventListener("change", checkValidName);
+    mailValid.addEventListener("change", checkValidEmail);
+    surname.addEventListener("change", checkValidSecondName);
+    org.addEventListener("change", checkValidOrg);
+    
+    window.addEventListener('popstate', function(event) {
+        if (popupOverlay.style.display === "block") {
+            popupOverlay.style.display = "none";
+        }
+        
+        if (window.location.hash === '#form') {
+            popupOverlay.style.display = "block";
+        }
+    });
+});
+    </script>
 </body>
 </html>
+
