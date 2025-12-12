@@ -22,7 +22,7 @@
                 <label class="labelForm">Организация:<br><input name = "organisation" type = "text" placeholder="Организация:" class = "inputForm" id = "organisation"></label>
                 <label class="labelForm">Электронная почта:<br><input name = "mail" type="email" placeholder="Email:" class="inputForm" id = "mail"></label>
                 <label class="labelForm">Ваше сообщение для нас:<textarea name = "message" class="form-control" id="exampleFormControlTextarea1"></textarea></label>
-                <label class="labelForm"><input name = "radio" type = "radio">Согласие на обработку данных</label>
+                <label class="labelForm"><input name = "radio" type = "radio" id="consent">Согласие на обработку данных</label>
             </form>
             <div id = "form-btns">
             <button class = "form-btn" id = "close-popup">Отмена</button>
@@ -36,13 +36,18 @@ const popupOverlay = document.querySelector("#popup-overlay");
 const pop = document.querySelector("#popup");
 const btn = document.querySelector("#call-popup");
 const closeBtn = document.querySelector("#close-popup");
-// Получаем первый элемент из коллекции
+const sendBtn = document.querySelector("#end");
+const consentCheckbox = document.querySelector("#consent");
 const fnValid = document.getElementsByName('firstName')[0];
 const mailValid = document.getElementById("mail");
 const surname = document.getElementById("secondName");
-const org =  document.getElementById("organisation")
+const org =  document.getElementById("organisation");
+const messageTextarea = document.getElementById("exampleFormControlTextarea1");
+
 const nameRegex = /^[A-Za-z]+$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const FORMCARRY_URL = "https://formcarry.com/s/YOUR_FORM_ID";
 
 function checkInitialState() {
     if (window.location.hash === '#form') {
@@ -64,63 +69,140 @@ function hidePopup() {
 
 function checkValidName() {
     if(!nameRegex.test(fnValid.value)) {
-        alert("Ошибка!");
+        alert("Ошибка! Имя должно содержать только буквы");
+        return false;
     }
     else if(fnValid.value.trim() === ""){
-        alert("Ошибка!");
+        alert("Ошибка! Поле 'Имя' обязательно для заполнения");
+        return false;
     }
-     else {
-        alert("Круто");
-    }
+    return true;
 }
 
 function checkValidSecondName() {
     if(!nameRegex.test(surname.value)) {
-        alert("Ошибка!");
+        alert("Ошибка! Фамилия должна содержать только буквы");
+        return false;
     }
     else if(surname.value.trim() === ""){
-        alert("Ошибка!");
+        alert("Ошибка! Поле 'Фамилия' обязательно для заполнения");
+        return false;
     }
-     else {
-        alert("Круто");
-    }
+    return true;
 }
 
 function checkValidOrg(){
     if(org.value.trim() === ""){
-        alert("Ошибка!");
+        alert("Ошибка! Поле 'Организация' обязательно для заполнения");
+        return false;
     }
-    else {
-        alert("Круто");
-    }
+    return true;
 }
 
 function checkValidEmail(){
     if(!emailRegex.test(mail.value)) {
-        alert("Ошибка!");
+        alert("Ошибка! Введите корректный email адрес");
+        return false;
     }
     else if(mail.value.trim() === ""){
-        alert("Ошибка!");
+        alert("Ошибка! Поле 'Email' обязательно для заполнения");
+        return false;
     }
-    else {
-        alert("Круто");
+    return true;
+}
+
+function checkConsent() {
+    if (!consentCheckbox.checked) {
+        alert("Необходимо дать согласие на обработку данных");
+        return false;
+    }
+    return true;
+}
+
+function validateForm() {
+    const validations = [
+        checkValidName(),
+        checkValidSecondName(),
+        checkValidOrg(),
+        checkValidEmail(),
+        checkConsent()
+    ];
+    
+    return validations.every(result => result === true);
+}
+
+async function sendForm() {
+    if (!validateForm()) {
+        return;
+    }
+    
+    const formData = {
+        firstName: fnValid.value,
+        secondName: surname.value,
+        organisation: org.value,
+        mail: mailValid.value,
+        message: messageTextarea.value,
+        consent: consentCheckbox.checked
+    };
+    
+    
+    sendBtn.disabled = true;
+    sendBtn.textContent = "Отправка...";
+    
+    try {
+        const response = await fetch(FORMCARRY_URL, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.code === 200) {
+            alert("Форма успешно отправлена! Спасибо за ваше сообщение.");
+            document.getElementById("form").reset();
+            hidePopup();
+        } else {
+            
+            alert("Ошибка при отправке формы. Пожалуйста, попробуйте еще раз. Код ошибки: " + (result.code || response.status));
+        }
+    } catch (error) {
+        
+        alert("Произошла ошибка при отправке формы. Проверьте подключение к интернету и попробуйте еще раз.");
+        console.error("Ошибка отправки формы:", error);
+    } finally {
+        
+        sendBtn.disabled = false;
+        sendBtn.textContent = "Отправить";
     }
 }
 
 window.addEventListener("DOMContentLoaded", function(event) {
     console.log("DOMContentLoaded");
     
-    // Проверяем начальное состояние
+    
     checkInitialState();
     
     btn.addEventListener("click", showPopup);
     closeBtn.addEventListener("click", hidePopup);
+    sendBtn.addEventListener("click", sendForm);
     
-    // Правильное добавление обработчика события
+    
     fnValid.addEventListener("change", checkValidName);
     mailValid.addEventListener("change", checkValidEmail);
     surname.addEventListener("change", checkValidSecondName);
     org.addEventListener("change", checkValidOrg);
+    
+   
+    document.getElementById("form").addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            sendForm();
+        }
+    });
     
     window.addEventListener('popstate', function(event) {
         if (popupOverlay.style.display === "block") {
@@ -135,4 +217,3 @@ window.addEventListener("DOMContentLoaded", function(event) {
     </script>
 </body>
 </html>
-
